@@ -1,0 +1,97 @@
+---
+title: "R Notebook"
+output: html_notebook
+## Domáca úloha 4/10/2021 - funkcie
+
+- Napíšte funkciu s nasledujúcou signatúrou
+
+```{r}
+combin <- function(n,k)
+{
+  if (n<k)
+    return("Zadaj ine cisla" )
+  else 
+  {
+    return(factorial (n)/(factorial(n-k)*factorial(k)))
+    }
+}
+combin(8,5)
+combin(2,7)
+
+```
+ktorá vracia kombinačné číslo 
+$$
+  n \choose k
+$$
+  *Návod*: Skúste implementáciu urobiť tak, aby ste nemuseli počítať faktoriály - to je veľmi neefektívne.
+
+- Predstavte si, že v `R` nemáme funkciu `sqrt` a napíšte funkciu, ktorá vráti odhad odmocniny x. Môžete využiť napríklad iteratívny vzťah
+$$
+  a_{n+1} = \frac{1}{2}\left(a_n + \frac{x}{a_n}\right)
+$$
+  Odmocnina <- function(n)
+  {
+    x <- 1
+toler <- 1e-9
+repeat{
+  (x <- 0.5* (n/x + x))
+   if (abs(x^2 - n)< toler) break 
+}
+return(x)}
+Odmocnina(10)
+sqrt (10) #na porovnanie
+Odmocnina(144)
+sqrt(144)
+  ​	Tento vzťah pochádza z riešenia rovnice $x-a^2=0$ Newtonovou metódou a iterácie dobre konvergujú. Odhadnite presnosť výsledku.
+
+- Napíšte funkciu s nasledujúcou signatúrou
+
+```{r}
+integ <- function(f, a, b)
+{
+  f <- function(x){x^2}
+   return(integrate(f, lower = a, upper = b))
+}
+integ(x^2,2,3)
+```
+ktorá vypočíta odhad určitého integrálu 
+$$
+  \int_a^b f(x)dx
+$$
+  a jeho chybu - teda vracia dve hodnoty. Toto sa v R robí tak, že vrátite zoznam `r`, pričom `r$integral` bude hodnota a `r$error` jej chyba.  
+
+- Napíšte funkciu so signatúrou 
+
+```{r}
+library(stringi)
+clear.dia <- function(s)
+{
+  iconv(s, to="ASCII//TRANSLIT")
+}
+clear.dia("čučoriedka")
+```
+ktorá nahradí znaky s diakritikou v textovom reťazci príslušnými znakmi bez diakritiky, teda napríklad
+`Čučoriedka` -> `Cucoriedka`
+
+__Návod__: Najjednoduchšie je použiť prekladový "slovník" pre náhradu znakov. 
+
+U každej funkcie ilustrujte na rozumnom počte príkladov, že vaša implementácia funguje.  Nepotrebujem žiadne extra precízne či efektívne implementácie, iba niečo, čo v zásade funguje. 
+
+
+
+**Riešenia poprosím do víkendu pred budúcim cvičením, teda do 15. októbra vo forme odkazu na `.Rmd` súbor vo vašom GitHub repozitári.**
+  ---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
