@@ -1,0 +1,102 @@
+---
+title: "Skúška"
+author: "Veronika Benková"
+date: "28 12 2021"
+output: html_document
+---
+Na analýzu dát som si vybrala excelový súbor titanic, ktorý je voľne dostupný na internete
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(utils)
+```
+
+```{r}
+titanic <- read.csv("https://raw.githubusercontent.com/VBenkova/R-ko/main/titanic.csv")
+View(titanic)
+
+```
+Z tabuľky som si na anlýzu vybrala 4 skupiny dát: Survived, PClass, Sex a Age a tabuľku som si vizualizovala. V skupinách dát PClass, Sex a Age porovnám jednotlivé počty preživších (P- prežili) a mŕtvych (N- neprežili),
+```{r}
+titanic <- titanic %>% 
+  select(-PassengerId, -Name, -SibSp, -Parch, -Ticket, -Cabin, -Fare, -Embarked) %>%
+  mutate(Survived = factor(Survived, levels = c(0, 1), labels = c("N", "P")),
+         Sex = factor(Sex, levels=c("male", "female"), labels=c("m", "ž")),
+         Pclass = factor(Pclass, levels=c(1,2,3), labels=c("Prvá", "Druhá", "Tretia")))
+colnames(titanic) <- c("Prežili/neprežili", "Trieda", "Pohlavie", "Vek") 
+View(titanic)
+```
+
+
+V prvom grafe som si zobrazila, aký bol celkový počet mŕtvych ku živým bez ohľadu na vek, triedu a pohlavie. Vidíme, že celkovo zomrelo 549 ľudí a prežilo 342. 
+```{r}
+titanic %>% 
+  ggplot(aes(x= `Prežili/neprežili`)) +
+  geom_bar(width= 0.5, fill=c("grey", "darkblue")) +
+  geom_text(stat = "count", aes(label=..count..), vjust= -0.3)+
+ theme_classic()  +
+  theme(
+    plot.title= element_text(hjust=0.5),
+ )+
+   labs(title = "Počet preživších a mŕtvych", x = NULL, y = "Počet pasažierov")
+```
+
+V nasledujúcom grafe som si vizualizovala, aké sú množstvá preživších a mŕtvych vzľadom na pohlavie. Z tohto grafu možno vyčítať, že na lodi sa nachádzalo viac mužov ako žien, no potopenie Titanicu prežilo viac žien. 
+
+```{r}
+titanic %>% 
+  ggplot(aes(x = Pohlavie, fill = `Prežili/neprežili`)) +
+  geom_bar(width = 0.5) +
+  geom_text (stat="count", aes(label=..count..), position= position_stack(vjust=0.5))+
+  theme_classic() +
+  theme(
+    plot.title = element_text( hjust = 0.9),
+    
+  ) +
+  labs(title = "Počet preživších a mŕtvych podľa pohlavia", x = NULL, y = "Počet pasažierov")
+```
+Na grafe nižiše možno vidieť, že najviac ľudí cestovalo 3. triedou a najmenej 2. Vidíme, že z 1. triedy prežila viac než polovica, z druhej triedy bol rozdiel medzi preživšími a mŕtvymi 10 ľudí, pričom viac ľudí zahynulo a veľká časť cestujúcich 3. triedy zahynula. 
+
+```{r}
+titanic %>% 
+  ggplot(aes(x = Trieda, fill = `Prežili/neprežili`)) +
+  geom_bar(width = 0.5) +
+  geom_text (stat="count", aes(label=..count..), position= position_stack(vjust=0.5))+
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.95),
+  ) +
+  labs(title = "Počet preživších a mŕtvych podľa triedy, v ktorej cestovali", x = NULL, y = "Počet pasažierov")
+```
+V naslesledujúch boxplotoch vidíme porovnanie veku preživších a mŕtvych nezávisle od triedy, veku a pohlavia. Niektoré dáta však neobsahujú vek onoho konkrétneho pasažiara, preto tieto hodnoty nie sú zahrnuté v grafe, a teda priemerná hodnota veku nemusí byť úplne presná. 
+```{r}
+titanic %>% 
+  ggplot(aes(x = `Prežili/neprežili`, y = Vek)) +
+  geom_boxplot(fill=c("grey", "lightblue")) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+  ) +
+  labs(title = "Počet preživších a mŕtvych podľa veku", x = NULL)
+```
+V tab1 vidíme, že priemerný vek mŕtvych a živých je veľmi podobný. Pomocou t-testu som porovnala, či je medzi týmito 2 skupinami signifikantný rozdiel.
+```{r}
+tab1<- aggregate(Vek~`Prežili/neprežili`, data=titanic, FUN = mean)
+View(tab1)
+```
+Nulová hypotéza je, že medzi skupinami je signifikantný rozdiel. Kedže p hodnota je menšia ako 0,05, zamietame nulovú hypotézu, a teda medzi skupinami nie je signifikantný rozdiel. 
+```{r}
+t.test(Vek~`Prežili/neprežili`, var.equal=TRUE, data=titanic)
+```
+
+
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
